@@ -17,7 +17,7 @@ services:
       - ./src:/src
 
   mysql:
-    image: mysql
+    image: mysql:5.7
     container_name: "laravel-mysql"
     restart: always
     environment:

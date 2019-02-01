@@ -1,4 +1,4 @@
-FROM php:fpm
+FROM php:9.2-fpm
 
 RUN apt-get update \ 
     && apt-get install -y zlib1g-dev \

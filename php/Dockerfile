@@ -6,6 +6,7 @@ RUN apt-get update \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
+    unzip \
     && docker-php-ext-install zip \
     && yes "" | pecl install xdebug \
     && docker-php-ext-enable xdebug \

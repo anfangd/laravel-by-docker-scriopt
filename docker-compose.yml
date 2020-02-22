@@ -13,6 +13,8 @@ services:
   php:
     build: ./php
     container_name: "dc-app-php"
+    ports:
+      - "10000:22"
     volumes:
       - ./src:/src
       - ./php/20-xdebug.ini:/usr/local/etc/php/conf.d/20-xdebug.ini

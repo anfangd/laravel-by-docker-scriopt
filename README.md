@@ -30,6 +30,8 @@ The key's randomart image is:
 mv ssh-access_key.pub php/authorized_keys
 
 # build & Start
+mv authorized_keys.sample authorized_keys
+
 docker-compose build
 docker-compose up -d
 

@@ -1,5 +1,7 @@
 FROM php:7.2-fpm
 
+ENV LANG C.UTF-8
+
 RUN apt-get update \ 
     && apt-get install -y \
     zlib1g-dev \
@@ -38,3 +40,41 @@ RUN apt-get update
 RUN apt-get install -y nodejs
 
 WORKDIR /src
+
+# ここから最後までがポイント
+RUN apt-get update && apt-get install -y openssh-server supervisor git
+RUN mkdir -p /var/run/sshd
+
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+# 手元の公開鍵をコピー
+COPY authorized_keys /root/authorized_keys
+
+EXPOSE 22
+
+# 公開鍵を使えるようにする (パーミッション変更など)
+RUN mkdir -p ~/.ssh && \
+    mv ~/authorized_keys ~/.ssh/authorized_keys && \
+    chmod 0600 ~/.ssh/authorized_keys
+
+# supervisor
+# Docker で nginx + php-fpm + Laravel5.3 の開発環境を作る - takaya030の備忘録
+# http://takaya030.hatenablog.com/entry/2016/09/20/230739
+RUN mkdir -p /var/log/supervisor && \
+    chmod 777 /var/log/supervisor && \
+    touch /var/log/supervisor/supervisord.log && \
+    chmod 777 /var/log/supervisor/supervisord.log
+COPY ./supervisord.conf /etc/supervisor/conf.d/
+#CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# SSH デーモンの Docker 化 — Docker-docs-ja 1.9.0b ドキュメント
+# http://docs.docker.jp/v1.9/engine/examples/running_ssh_service.html
+#CMD ["/usr/sbin/sshd", "-D"]

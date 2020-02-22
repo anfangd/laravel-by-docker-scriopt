@@ -37,6 +37,37 @@ docker-compose up -d
 
 ```
 
+### Create New Laravel Project
+
+```bash
+# Create New Project
+docker-compose exec php laravel new laravel-src
+docker-compose exec php chmod -R 777 ./laravel-src/storage
+
+# change .env
+vim src/laravel-src/.env
+```
+
+```bash:src/laravel-src/.env
+# change parameters
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=root
+DB_USERNAME=root
+DB_PASSWORD=root
+```
+
+```bash
+# Migratiojn
+$ docker-compose exec php php ./laravel-src/artisan migrate
+Migration table created successfully.
+Migrating: 2014_10_12_000000_create_users_table
+Migrated:  2014_10_12_000000_create_users_table
+Migrating: 2014_10_12_100000_create_password_resets_table
+Migrated:  2014_10_12_100000_create_password_resets_table
+```
+
 ## How to access
 
 ### HTTP
